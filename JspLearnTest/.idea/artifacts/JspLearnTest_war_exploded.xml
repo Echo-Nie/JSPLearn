@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="JspLearnTest:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/JspLearnTest_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="JspLearnTest" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="jakarta.servlet.jsp.jstl-2.0.0" />
+          <element id="library" level="project" name="jsp-api" />
+          <element id="library" level="project" name="servlet-api" />
+        </element>
+      </element>
+      <element id="library" level="project" name="jakarta.servlet.jsp.jstl-api-2.0.0" />
+      <element id="javaee-facet-resources" facet="JspLearnTest/web/Web" />
+    </root>
+  </artifact>
+</component>

@@ -1042,7 +1042,125 @@ pageContext.setAttribute("map", map);
 
 JSTL提供了格式化和解析数字和日期的标签,我们讨论里面有:formatNumber、formatDate、parseNumber及parseDate.
 
-formatNumber标签用于格式化数字，百分比，货币。该标签用指定的格式或精度来格式化数字，将数值型数据转换成指定格式的字符串类型。
+### 5.4.1 formatNumber
+
+用于格式化数字，百分比，货币。该标签用指定的格式或精度来格式化数字，将数值型数据转换成指定格式的字符串类型。语法模板如下：
+
+```jsp
+<fmt :formatNumber
+value="<string>"
+type="<string>"
+var="<string>"
+scope="<string>"/>
+```
+
+| 属性  |              描述               | 是否必要 |    默认值     |
+| :---: | :-----------------------------: | :------: | :-----------: |
+| value |          要显示的数字           |  **是**  |      无       |
+| type  | number,currency, 或 percent类型 |    否    |    Number     |
+|  var  |      存储格式化数字的变量       |    否    | Print to page |
+| scope |         var属性的作用域         |    否    |     page      |
+
+```jsp
+<fmt:formatNumber value="10" type="currency" var="num"/> ${num} <br>
+<fmt:formatNumber value="10" type="percent" /><br>
+<fmt:formatNumber value="10" type="currency" /><br>
+<%--设置时区--%>
+<fmt:setLocale value="en_US"/>
+<fmt:formatNumber value="10" type="currency"/>
+```
+
+### 5.4.2 formatDate
+
+标签用于使用不同的方式格式化日期。将Rate型数据转换成指定格式的字符串类型。
+
+|   属性    |                 描述                  | 是否必要 |  默认值  |
+| :-------: | :-----------------------------------: | :------: | :------: |
+|   value   |             要显示的日期              |    是    |    无    |
+|   type    |          DATE, TIME, 或 BOTH          |    否    |   date   |
+| dateStyle | FULL, LONG, MEDIUM, SHORT, 或 DEFAULT |    否    | default  |
+| timeStyle | FULL, LONG, MEDIUM, SHORT, 或 DEFAULT |    否    | default  |
+|  pattern  |            自定义格式模式             |    否    |    无    |
+| timeZone  |            显示日期的时区             |    否    | 默认时区 |
+|    var    |        存储格式化日期的变量名         |    否    |   页面   |
+|   scope   |       存储格式化日志变量的范围        |    否    |   页面   |
+
+| 代码 |                    描述                    |    实例    |
+| :--: | :----------------------------------------: | :--------: |
+|  y   |    年份小于10，显示不具有前导零的年份。    |    2002    |
+|  M   |     月份数字。一位数的月份没有前导零。     | April & 04 |
+|  d   |   月中的某一天。一位数的日期没有前导零。   |     20     |
+|  h   | 12小时制的小时。一位数的小时数没有前导零。 |     12     |
+|  H   | 24小时制的小时。一位数的小时数没有前导零。 |     0      |
+|  m   |      分钟。一位数的分钟数没有前导零。      |     45     |
+|  s   |        秒。一位数的秒数没有前导零。        |     52     |
+
+```jsp
+<%--格式化日期--%>
+<%
+    request.setAttribute("myDate",new Date());
+%>
+${myDate} <br>
+<fmt:formatDate value="${myDate}"/> <br>
+<fmt:formatDate value="${myDate}" type="date"/> <br>
+<fmt:formatDate value="${myDate}" type="time"/> <br>
+<fmt:formatDate value="${myDate}" type="both"/> <br>
+<fmt:formatDate value="${myDate}" type="both"/> <br>
+<fmt:formatDate value="${myDate}" type="both" dateStyle="FULL"/> <br>
+<fmt:formatDate value="${myDate}" type="both" dateStyle="short"/> <br>
+<fmt:formatDate value="${myDate}" pattern="yyyy-MM-dd"/> <br>
+```
+
+![image-20250117011822591](Images/fmtDate.png)
+
+### 5.4.3 parseNumber与Date
+
+parseNumber标签用来解析数字，百分数，货币。将数字、货币或百分比类型的字符串转换成数值型。
+
+```jsp
+<fmt:parseNumber
+	value="<string>"
+	type="<string"
+	var="<string>"
+	scope="<string>"/>
+```
+
+| 属性  | 描述                         | 是否必要 | 默认值        |
+| ----- | ---------------------------- | -------- | ------------- |
+| value | 要解析的数字                 | 否       | Body          |
+| type  | NUMBER, CURRENCY, 或 PERCENT | 否       | number        |
+| var   | 存储待解析数字的变量         | 否       | Print to page |
+| scope | var属性的作用域              | 否       | page          |
+
+```jsp
+<%--parseNumber的使用--%>
+<%--<fmt:setLocale value="zh_CN"/>--%>
+<%--转换回中国时区，就可以用￥--%>
+<fmt:parseNumber value="100"/><br>
+<fmt:parseNumber value="100" type="number"/><br>
+<fmt:parseNumber value="100%" type="percent"/><br>
+<fmt:parseNumber value="$10.00" type="currency"/><br>
+<%--因为前面设置了US时区，这里不能用“￥”，会报错，必须用对应时区的货币标识符才可以--%>
+```
+
+parseDate：解析日期，把指定格式的字符串转成日期。
+
+```jsp
+<fmt:parseDate value="2024-12-11" type="date"/><br>
+<fmt:parseDate value="2024/12/11" pattern="yyyy/MM/dd"/><br> 
+```
+
+
+
+# 6 JSP实现Login
+
+
+
+
+
+
+
+
 
 
 
