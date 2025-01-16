@@ -37,43 +37,43 @@ jsp就是一种动态网页编程技术，像HTML是静态页面，不能动态�
 
 新建项目：
 
-![image-20241209200323790](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200323790.png)
+![IDEA新建项目](images/idea项目.png)
 
 导入Web模块：
 
-![image-20241209200344167](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200344167.png)
+![image-20241209200344167](images/导入web模块.png)
 
 配置Artifact：
 
-![image-20241209200435922](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200435922.png)
+![image-20241209200435922](images/配置art.png)
 
 配置Tomcat：
 
-![image-20241209200551539](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200551539.png)
+![image-20241209200551539](images/配置tomcat.png)
 
 新建jsp文件：
 
-![image-20241209200511104](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200511104.png)
+![image-20241209200511104](images/新建jsp.png)
 
 页面报错：
 
-![image-20241209200720388](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200720388.png)
+![image-20241209200720388](images/jsp项目报错.png)
 
 后缀加上你的项目名字：
 
-![image-20241209200737153](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200737153.png)
+![image-20241209200737153](images/加上后缀名.png)
 
 发现url很奇怪，直接自定义：
 
-![image-20241209200934503](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200934503.png)
+![image-20241209200934503](images/自定义url.png)
 
-![image-20241209200945802](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209200945802.png)
+![image-20241209200945802](images/自定义url2.png)
 
-![image-20241209201033239](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209201033239.png)
+![image-20241209201033239](images/正常页面1.png)
 
 接着会在对应目录下生成class和java文件（用Listary搜JSPTestDay1）：
 
-![image-20241209201226442](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209201226442.png)
+![image-20241209201226442](images/class-java文件.png)
 
 
 
@@ -188,7 +188,7 @@ jsp就是一种动态网页编程技术，像HTML是静态页面，不能动态�
 </html>
 ```
 
-![image-20241209205706382](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209205706382.png)
+![image-20241209205706382](images/查看源码.png)
 
 
 
@@ -223,7 +223,7 @@ jsp就是一种动态网页编程技术，像HTML是静态页面，不能动态�
 3. 因为是一个源码文件，所以不能出现同名变量
 4. 运行效率高一点，但是耦合高不灵活
 
-![image-20241209213900085](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209213900085.png)
+![image-20241209213900085](images/静态包含生成文件.png)
 
 ```jsp
 <%--
@@ -323,7 +323,7 @@ jsp就是一种动态网页编程技术，像HTML是静态页面，不能动态�
 3. 可以定义同名变量
 4. 效率高耦合度低
 
-![image-20241209213724467](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209213724467.png)
+![image-20241209213724467](images/动态包含生成文件.png)
 
 ### 2.3.3 动态包含带参数
 
@@ -379,7 +379,7 @@ name属性不支持表达式，而value支持表达式。
 </html>
 ```
 
-![image-20241210001303523](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241210001303523.png)
+![image-20241210001303523](images/page不写死.png)
 
 
 
@@ -540,7 +540,7 @@ public class LoginServlet extends HttpServlet {
 }
 ```
 
-![image-20241210154028909](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241210154028909.png)
+![image-20241210154028909](images/login简易版.png)
 
 
 
@@ -550,7 +550,7 @@ public class LoginServlet extends HttpServlet {
 
 首先发现上面提示信息那一块是null，影响美观，能不能换成空串？引出EL表达式。
 
-![image-20241210154418860](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241210154418860.png)
+![image-20241210154418860](images/带null的login.png)
 
 EL(Expression Language)是为了使JSP 写起来更加简单。表达式语言的灵感来自于ECMAScript 和XPath 表达式语言，它提供了在JSP 中简化表达式的方法，让Jsp 的代码更加简化。
 
@@ -860,9 +860,9 @@ Java Server Pages Standard Tag Libray(STL):JSP 标准标签库。
 
 在官网(https://archive.apache.org/dist/jakarta/taglibs/standard/binaries/)下载好Jakarta-taglib-standard-1.1.2.zip解压后将lib下的两个jar包拷贝到指定目录下
 
-<img src="C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241212000714825.png" alt="image-20241212000714825" style="zoom:80%;" />
+<img src="images/jstl导包.png" alt="image-20241212000714825" style="zoom:80%;" />
 
-<img src="C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241212001041665.png" alt="image-20241212001041665" style="zoom: 50%;" />
+<img src="images/配置Library.png" alt="image-20241212001041665" style="zoom: 50%;" />
 
 ## 5.2 条件动作标签
 
@@ -1038,11 +1038,11 @@ pageContext.setAttribute("map", map);
 
 
 
-## 5.4 格式化动作标签（冷门）
+## 5.4 格式化动作标签（偏）
 
+JSTL提供了格式化和解析数字和日期的标签,我们讨论里面有:formatNumber、formatDate、parseNumber及parseDate.
 
-
-
+formatNumber标签用于格式化数字，百分比，货币。该标签用指定的格式或精度来格式化数字，将数值型数据转换成指定格式的字符串类型。
 
 
 
@@ -1054,19 +1054,19 @@ pageContext.setAttribute("map", map);
 
 在tomcat下找到下面两个jar包，放到lib下面。
 
-![image-20241209203950852](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209203950852.png)
+![image-20241209203950852](images/out报错问题.png)
 
 接着，右键，add as Library
 
 最后得到下图所示即可解决问题。
 
-![image-20241209204227271](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209204227271.png)
+![image-20241209204227271](images/out报错解决.png)
 
 ## 2 静态include的变量重复定义
 
-![image-20241209212000441](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209212000441.png)
+![image-20241209212000441](images/静态变量重复定义.png)
 
-![image-20241209212016657](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209212016657.png)
+![image-20241209212016657](images/静态变量重复定义2.png)
 
 如果你在主体中有变量num，然后在foot或者head中也有同名变量，将会报如下错误。
 
@@ -1148,7 +1148,7 @@ https://repo.maven.apache.org/maven2/jakarta/servlet/jsp/jstl/jakarta.servlet.js
 
 https://repo.maven.apache.org/maven2/org/glassfish/web/jakarta.servlet.jsp.jstl/2.0.0/jakarta.servlet.jsp.jstl-2.0.0.jar
 
-![image-20241212003148576](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241212003148576.png)
+![image-20241212003148576](images/jstl版本问题.png)
 
 
 
@@ -1158,10 +1158,10 @@ https://repo.maven.apache.org/maven2/org/glassfish/web/jakarta.servlet.jsp.jstl/
 
 如果把项目重命名，如下：
 
-![image-20250114005129295](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20250114005129295.png)
+![image-20250114005129295](images/项目重命名问题.png)
 
 会导致404，原因很简单，假设原项目是JspLearn，被你改成了JspLearnTest，那么原本你的web项目的路径都是原来的，比如说是xxx/xxx/JspLearn路径下，但是你在xxx/xxx/JspLearnTest路径下会找不到，很合理。这个时候只需要把web重新配置即可，如下图：
 
-![image-20250114005744553](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20250114005744553.png)
+![image-20250114005744553](images/项目重命名解决.png)
 
 把Artifacts重新创建，在Module里面重新添加web配置，最后把tomcat原来的Development和Server重新添加即可。
