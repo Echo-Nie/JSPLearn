@@ -1,4 +1,4 @@
-package com.ynu.edu.filtertest;
+package com.ynu.edu.filter;
 
 import java.io.*;
 import javax.servlet.http.*;
