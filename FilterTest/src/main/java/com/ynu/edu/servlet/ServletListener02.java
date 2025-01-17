@@ -5,19 +5,22 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * @ClassName Servlet01
+ * @ClassName ServletListener01
  * @Description
  * @Author Echo-Nie
- * @Date 2025/1/17 21:52
+ * @Date 2025/1/17 23:06
  * @Version V1.0
  */
-//@WebServlet("/ser01")
-public class Servlet01 extends HttpServlet {
+@WebServlet("/s02")
+public class ServletListener02 extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Servlet01 start...");
+        System.out.println("Servlet-Listener01 Destroy...");
+        req.getSession().invalidate();
+
     }
 }

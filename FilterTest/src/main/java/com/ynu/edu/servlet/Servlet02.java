@@ -14,7 +14,7 @@ import java.io.IOException;
  * @Date 2025/1/17 21:52
  * @Version V1.0
  */
-@WebServlet("/ser02")
+//@WebServlet("/ser02")
 public class Servlet02 extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

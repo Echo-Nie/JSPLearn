@@ -11,7 +11,7 @@ import java.io.IOException;
  * @Date 2025/1/17 21:48
  * @Version V1.0
  */
-@WebFilter("/*")
+//@WebFilter("/*")
 public class FilterTestAll implements Filter {
 
     @Override
