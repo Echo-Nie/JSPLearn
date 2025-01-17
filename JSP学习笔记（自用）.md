@@ -33,7 +33,7 @@ jsp就是一种动态网页编程技术，像HTML是静态页面，不能动态�
 
 ------
 
-# 1 Idea新建项目
+# 1 Idea2022新建项目
 
 新建项目：
 
@@ -74,12 +74,6 @@ jsp就是一种动态网页编程技术，像HTML是静态页面，不能动态�
 接着会在对应目录下生成class和java文件（用Listary搜JSPTestDay1）：
 
 ![image-20241209201226442](images/class-java文件.png)
-
-
-
-# 1 Eclipse新建项目
-
-
 
 ------
 
@@ -130,7 +124,7 @@ jsp就是一种动态网页编程技术，像HTML是静态页面，不能动态�
 
 ```
 
-![image-20241209202512339](C:\Users\聂宇旋\AppData\Roaming\Typora\typora-user-images\image-20241209202512339.png)
+![image-20241209202512339](images/注释.png)
 
 ------
 
@@ -1038,7 +1032,7 @@ pageContext.setAttribute("map", map);
 
 
 
-## 5.4 格式化动作标签（偏）
+## 5.4 格式化动作标签（不太用）
 
 JSTL提供了格式化和解析数字和日期的标签,我们讨论里面有:formatNumber、formatDate、parseNumber及parseDate.
 
@@ -1154,6 +1148,545 @@ parseDate：解析日期，把指定格式的字符串转成日期。
 
 # 6 JSP实现Login
 
+## 6.1 项目结构（分层架构）
+
+为了防止出现过多bug，这里使用jdk11和tomcat8来完成。
+
+**注：**这里用了手动导包（很不好的习惯，我个人主要是想熟悉一下手动导包的流程，仅此而已，实际开发请我完全按照标准开发流程使用maven进行包管理。），本项目的最终版本中，lib都是通过pom.xml进行导入的。
+
+![image-20250117180928144](images/login项目结构.png)
+
+## 6.2 配置文件
+
+### 6.2.1 UserMapper.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynu.edu.mapper.UserMapper">
+    <select id="queryUserByName" parameterType="String" resultType="com.ynu.edu.entity.User">
+        SELECT * FROM user WHERE userName = #{userName}
+    </select>
+</mapper>
+```
+
+### 6.2.2 mybatis-config.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org/DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <properties resource="mysql.properties"/>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <package name="com.ynu.edu.mapper"/>
+    </mappers>
+
+</configuration>
+```
+
+### 6.2.3 mysql.properties
+
+```xml
+driver=com.mysql.cj.jdbc.Driver
+url=jdbc:mysql://localhost:3306/user?useSSL=false&serverTimezone=UTC
+username=root
+password=mysql123
+```
+
+### 6.2.4 手动导入jar包（不规范）
+
+![image-20250117180928144](images/导入jar包.png)
+
+![image-20250117180928144](images/jar包web导入.png)
+
+手动导入jar包是十分不规范的，但是遇到一些极端情况我们只能这样做。这样仅供本人自己复习用，保证知识面的完整性。
+
+实际使用maven进行包管理，操作如下：
+
+```xml
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
+        </dependency>
+```
+
+## 6.3 功能开发逻辑梳理
+
+```markdown
+1. 数据库user表自行准备
+2. 前台页面
+     登录页面： login.jsp
+        用户登录：JS校验
+        登录表单验证
+            1. 给登录按钮绑定点击事件
+            2. 获取uname和upwd
+            3. 判断是否为空（先姓名、后密码），span标签给出提示
+            4. 都不为空，手动提交表单
+     首页
+
+3. 后台实现（一个优秀的后台代码是不能相信前台代码的）
+     登录功能
+        1. 接收客户端的请求（userName、pwd）
+        2. 既然不能相信前台代码，那就要做null判断
+           但是市面上我们发现有一些软件如果你有一项信息没填，会把你的所有已填的信息都清空，非常不好。
+           解释：注册时候填账号密码、邮箱等，邮箱没填，把你已经填好的账号密码也清空了，是因为后台做的是直接跳转回初始页面，导致你已填好的数据丢失。
+        所以这里我们要做数据回显。
+            如果参数为空，通过MessageModel返回结果（设置state（success or false）、提示信息、回显数据；直接return
+            将消息模型对象设置到Request作用域里面，做请求转发跳转登录页面。
+        3. 登录判断习惯：单独判断userName和pwd，不要出现“用户名或密码错误”这样的错误提示，非常不友好。具体原因请自行想象
+
+    代码编写思路：
+        1.接收客户端的请求(接收参数:姓名、密码)
+        2.参数的非空判断
+            if NULL
+                通过消息模型对象返回结果(设置状态、设置提示信息、回显数据)
+                将消息模型对象设置到request作用域中请求转发
+                跳转到登录页面
+                return
+        3.通过用户姓名查询用户对象
+        4.判断用户对象是否为空
+            if NULL
+                通过消息模型对象返回结果(设置状态、设置提示信息、回显数据)
+                将消息模型对象设置到request作用域中请求转发
+                跳转到登录页面
+                return
+        5.将数据库中查询到的用户密码与前台传递的密码作比较
+            if not equal
+                通过消息模型对象返回结果(设置状态、设置提示信息、回显数据)
+                将消息模型对象设置到request作用域中
+                请求转发跳转到登录页面
+            if equal
+                登录成功
+                将用户信息设置到session作用域中（因为你要知道是哪个用户登录，每个用户登录到不同的页面）
+                重定向跳转到首页
+    分层结构：
+        Controller：接收请求、相应结果
+            1. 接受客户端请求（接收参数：name、pwd）
+            2. 调用Service层的方法，返回MessageModel
+            3. 判断MessageModel的状态码
+                 if 失败：将消息模型对象设置到request作用域
+                 if 成功：将消息模型中的用户信息设置到session中，重定向到index.jsp
+            4. 请求转发跳转到登录页面
+        Service：业务逻辑
+            1. 参数的非空判断
+                if NULL：状态码、提示信息、回显数据设置到MessageModel中，return
+            2. 调用dao层查询方法，通过uname查询用户对象
+            3. 判断用户对象是否为空 
+               状态码、提示信息、回显数据设置到MessageModel中，return
+            4. 判断数据库中查询的和前台的uname和pwd进行对比
+            5. 登录成功：将success状态、提示信息、用户对象舍之道MessageModel对象中，return
+        Mapper层（DAO）：
+            定义对应的接口
+
+4. 分层思想：高内聚低耦合
+        Controller层：接收请求、调用Service层、响应结果
+        Service层：业务逻辑判断
+        Mapper层：接口类、数据库相关操作、mapper.xml
+        Entity（Po、Model）：JAVABean实体
+        Util层：工具类
+        Test：测试类、方法
+```
+
+## 6.4 测试Session
+
+### 6.4.1 User类：
+
+```java
+package com.ynu.edu.entity;
+
+/**
+ * @ClassName User
+ * @Description 用户类
+ * @Author Echo-Nie
+ * @Date 2025/1/17 2:28
+ * @Version V1.0
+ */
+public class User {
+    private Integer userId;
+    private String userName;
+    private String pwd;
+    private int age;
+    //getter and setter
+}
+
+```
+
+### 6.4.2 UserMapper：
+
+```java
+package com.ynu.edu.mapper;
+
+import com.ynu.edu.entity.User;
+
+public interface UserMapper {
+    User queryUserByName(String userName);
+}
+```
+
+### 6.4.3 GetSqlSession：
+
+```java
+package com.ynu.edu.util;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * @ClassName GetSqlSession
+ * @Description 获取数据库session
+ * @Author Echo-Nie
+ * @Date 2025/1/17 2:44
+ * @Version V1.0
+ */
+public class GetSqlSession {
+    public static SqlSession createSqlSession(){
+        SqlSessionFactory sqlSessionFactory = null;
+        InputStream inpute = null;
+        SqlSession session = null;
+        try{
+            String resource = "mybatis-config.xml";
+            inpute= Resources.getResourceAsStream(resource);
+            sqlSessionFactory = new SqlSessionFactoryBuilder().build(inpute);
+            session = sqlSessionFactory.openSession();
+            return session;
+        }catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+
+```
+
+### 6.4.4 测试SqlSession
+
+```java
+import com.ynu.edu.entity.User;
+import com.ynu.edu.mapper.UserMapper;
+import com.ynu.edu.util.GetSqlSession;
+import org.apache.ibatis.session.SqlSession;
+import org.junit.jupiter.api.Test;
+
+/**
+ * @ClassName TestSession
+ * @Description 测试获取user
+ * @Author Echo-Nie
+ * @Date 2025/1/17 13:46
+ * @Version V1.0
+ */
+public class TestSession {
+    @Test
+    public void Test1(){
+        SqlSession session = GetSqlSession.createSqlSession();
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        User user = userMapper.queryUserByName("admin");
+        System.out.println(user);
+    }
+    //输出如下：
+    //com.ynu.edu.entity.User@5c44c582
+    //Process finished with exit code 0
+}
+```
+
+## 6.5 编写项目代码
+
+### 6.5.1 消息模型对象
+
+```java
+package com.ynu.edu.vo;
+
+/**
+ * @ClassName MessageModel
+ * @Description 消息模型对象，做数据响应的；200表示成功，400表示失败
+ *              用字符串表示
+ *              回显数据：Object
+ * @Author Echo-Nie
+ * @Date 2025/1/17 14:11
+ * @Version V1.0
+ */
+public class MessageModel {
+    private String code = "200";//状态码，200成功，400失败
+    private String msg = "成功";
+    private Object object;
+    //getter setter
+}
+```
+
+### 6.5.2 编写Servlet
+
+```java
+package com.ynu.edu.controller;
+
+import com.ynu.edu.service.UserService;
+import com.ynu.edu.vo.MessageModel;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * @ClassName UserServlet
+ * @Description
+ * @Author Echo-Nie
+ * @Date 2025/1/17 14:15
+ * @Version V1.0
+ */
+@WebServlet("/login")
+public class UserServlet extends HttpServlet {
+    //实例化UserService对象
+    private UserService userService = new UserService();
+
+    /**
+     * @return void
+     * @Author Echo-Nie
+     * @Description 用户登录：
+     * 1. 接受客户端请求（接收参数：name、pwd）
+     * 2. 调用Service层的方法，返回MessageModel
+     * 3. 判断MessageModel的状态码
+     * if 失败：将消息模型对象设置到request作用域
+     * if 成功：将消息模型中的用户信息设置到session中，重定向到index.jsp
+     * 4. 请求转发跳转到登录页面
+     * @Date 14:35 2025/1/17
+     * @Param [request, response]
+     */
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        1. 接受客户端请求（接收参数：name、pwd）
+        String uname = request.getParameter("uname");
+        String upwd = request.getParameter("upwd");
+//        2. 调用Service层的方法，返回MessageModel
+        MessageModel messageModel = userService.userLogin(uname, upwd);
+//        3. 判断MessageModel的状态码
+        if (messageModel.getCode().equals("200")) {//成功
+            request.getSession().setAttribute("user", messageModel.getObject());
+            response.sendRedirect("index.jsp"); // 使用重定向
+        } else {//失败
+            request.setAttribute("messageModel", messageModel);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        }
+    }
+}
+```
+
+### 6.5.3 编写Service
+
+```java
+package com.ynu.edu.service;
+
+import com.ynu.edu.entity.User;
+import com.ynu.edu.mapper.UserMapper;
+import com.ynu.edu.util.GetSqlSession;
+import com.ynu.edu.util.StringUtil;
+import com.ynu.edu.vo.MessageModel;
+import org.apache.ibatis.session.SqlSession;
+
+/**
+ * @ClassName UserService
+ * @Description 登录页面的业务逻辑层
+ * @Author Echo-Nie
+ * @Date 2025/1/17 14:14
+ * @Version V1.0
+ */
+public class UserService {
+    /**
+    * @Author Echo-Nie
+    * @Description
+    1. 参数的非空判断
+        if NULL：状态码、提示信息、回显数据设置到MessageModel中，return
+    2. 调用dao层查询方法，通过uname查询用户对象
+    3. 判断用户对象是否为空
+        状态码、提示信息、回显数据设置到MessageModel中，return
+    4. 判断数据库中查询的和前台的uname和pwd进行对比
+    5. 登录成功：将success状态、提示信息、用户对象舍之道MessageModel对象中，return
+
+    * @Date 14:43 2025/1/17
+    * @Param [uname, upwd]
+    * @return com.ynu.edu.vo.MessageModel
+    **/
+    public MessageModel userLogin(String uname, String upwd) {
+        MessageModel messageModel = new MessageModel();
+//        数据回显
+        User u = new User();
+        u.setUserName(uname);
+        u.setPwd(upwd);
+        messageModel.setObject(u);
+
+//        1. 参数的非空判断
+        if(StringUtil.isEmpty(uname)||StringUtil.isEmpty(upwd)){
+//            if NULL：状态码、提示信息、回显数据设置到MessageModel中，return
+            messageModel.setCode("400");
+            messageModel.setMsg("用户名和密码不能为空！！");
+
+        }
+//        2. 调用dao层查询方法，通过uname查询用户对象
+        SqlSession session = GetSqlSession.createSqlSession();
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        User user = userMapper.queryUserByName(uname);
+//        3. 判断用户对象是否为空
+        if(user==null){
+            messageModel.setCode("400");
+            messageModel.setMsg("用户不存在");
+            return messageModel;
+        }
+//        4. 判断数据库中查询的和前台的uname和pwd进行对比
+        if(!upwd.equals(user.getPwd())){
+            messageModel.setCode("400");
+            messageModel.setMsg("密码错误！");
+            return messageModel;
+        }
+        messageModel.setObject(user);
+
+        return messageModel;
+    }
+}
+```
+
+### 6.5.4 login.jsp（不含css）
+
+```jsp
+<%--
+  User: Echo-Nie
+  Date: 2025/1/17
+  Time: 1:51
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>用户登录</title>
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+</head>
+<body>
+<div id="loginForm">
+    <form action="login" method="post">
+        <div class="form-group">
+            <label for="uname">姓名：</label>
+            <input type="text" id="uname" name="uname" value="${messageModel.object.userName}">
+        </div>
+        <div class="form-group">
+            <label for="upwd">密码：</label>
+            <input type="password" id="upwd" name="upwd" value="${messageModel.object.pwd}">
+        </div>
+        <span id="msg" style="font-size: 12px;color: red">${messageModel.msg}</span><br>
+        <button type="submit" id="loginBtn">登录</button>
+        <button type="button">注册</button>
+    </form>
+</div>
+
+<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+<script type="text/javascript">
+    <%--     登录表单验证
+                1. 给登录按钮绑定点击事件
+                2. 获取uname和upwd
+                3. 判断是否为空（先姓名、后密码），span标签给出提示
+                4. 都不为空，手动提交表单
+    --%>
+    $("#loginBtn").click(function () {
+        //获取uname和pwd
+        var uname = $("#uname").val();
+        var upwd = $("#upwd").val();
+
+        if (isEmpty(uname)) {
+            $("#msg").html("用户名为空！");
+            return;
+        }
+        if (isEmpty(upwd)) {
+            $("#msg").html("密码为空！");
+            return;
+        }
+        //都不为空才能登录
+        $("#loginForm").submit();
+    });
+
+    /*
+    判断字符串是否为空
+    * */
+    function isEmpty(str) {
+        return str == null || str.trim() === "";
+    }
+</script>
+</body>
+</html>
+```
+
+![image-20250117180928144](images/登录页面.png)
+
+
+
+
+
+# 7 过滤器Filter和监听器Listener
+
+![image-20241209203950852](images/过滤器和监听器导图.png)
+
+## 7.1 过滤器Filter
+
+Filter，用于在 Servlet之外对 Request 或者 Response 进行修改。用于对用户请求进行预处理，也可以对 HttpServletResponse 进行后处理。
+
+Filter完整流程: Filter 对用户请求进行预处理，接着将请求交给 Serviet进行处理并生成响应，最后 Filter 再 对服务器响应进行后处理。在一个 web 应用中，可以开发编写多个 Filter，这些 Filter 组合 起来称之为一个 Filter 链。
+
+**大白话：**Filter 作为快递站点的安检环节。包裹（用户请求）到达站点后，先要经过安检（Filter 预处理），检查是否有违禁品等。安检通过后，包裹才会被送到仓库（Servlet 处理请求）。
+
+包裹从仓库发出后，再次经过安检（Filter 后处理），这次检查包装是否完好等，确保送到客户手中的包裹是合格的。多个安检环节就构成了安检链，类似于多个 Filter 组成的 Filter 链。
+
+![image-20241209203950852](images/过滤器机理.png)
+
+对于多个过滤器：先配置的先执行（请求时的执行顺序）；响应的时候顺序相反。如下图：
+
+![image-20241209203950852](images/多个过滤器.png)
+
+在 HttpServletRequest 到达 Servlet 之前，拦截客户的 HttpServletRequest。根据需要检查HttpServletRequest，也可以修改 HttpServletRequest 头和数据。
+
+在HttpServletResponse 到达客户端之前，拦截 HttpServletResponse。根据需要检查HttpServletResponse，也可以修改 HttpServletResponse头和数据。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1166,7 +1699,7 @@ parseDate：解析日期，把指定格式的字符串转成日期。
 
 ------
 
-# 一些小问题
+# 附录：Tips
 
 ## 1 发现使用“out”报错
 
@@ -1283,3 +1816,29 @@ https://repo.maven.apache.org/maven2/org/glassfish/web/jakarta.servlet.jsp.jstl/
 ![image-20250114005744553](images/项目重命名解决.png)
 
 把Artifacts重新创建，在Module里面重新添加web配置，最后把tomcat原来的Development和Server重新添加即可。
+
+## 6 究极大问题mybatis
+
+首先，网上有很多其他方法，但是我试了都不行。最后发现了一个这样的小bug。
+
+下面是我报错的一个测试代码
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        SqlSession session = GetSqlSession.createSqlSession();
+        UserMapper userMapper = session.getMapper(UserMapper.class);
+        User user = userMapper.queryUserByName("admin");
+        System.out.println(user);
+    }
+}
+```
+
+如果你发现报错：Exception in thread "main" org.apache.ibatis.binding.BindingException: Invalid bound statement (not found): com.ynu.edu.mapper.UserMapper.queryUserByName
+
+尝试一下把创建包名改成：com/ynu/edu/mapper，而不是com.ynu.edu.mapeer
+
+
+
+# 附录：源码地址
+
