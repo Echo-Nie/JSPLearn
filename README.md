@@ -1,7 +1,13 @@
 # JSPLearn
 记录在本科期间学习JSP时候的技术总结以及遇到的问题，后续可能会放入一些项目
 
+<<<<<<< HEAD
 ```xml
+=======
+
+
+Login项目包结构：
+>>>>>>> 4ecaec8ad89fbf263942b0e544af2a3bb8c708a3
 com.ynu.edu/
 ├── controller/
 │   ├── LogoutServlet.java
@@ -44,5 +50,8 @@ com.ynu.edu/
     ├── java/
     │   └── TestSession.java
     └── resources/
+<<<<<<< HEAD
 ```
 
+=======
+>>>>>>> 4ecaec8ad89fbf263942b0e544af2a3bb8c708a3
