@@ -1,0 +1,68 @@
+// 定义变量
+$primary-color: #00ffcc
+$secondary-color: #0077ff
+$background-color: #0a0a0a
+$text-color: #ffffff
+$button-color: #ff4d4d
+$button-hover-color: #ff1a1a
+$glow-color: rgba(0, 255, 204, 0.6)
+
+// 定义混合（Mixin）
+@mixin glow-effect($color)
+  box-shadow: 0 0 10px $color, 0 0 20px $color, 0 0 30px $color
+
+@mixin flex-center
+  display: flex
+  justify-content: center
+  align-items: center
+
+// 全局样式
+body
+  font-family: Arial, sans-serif
+  background: linear-gradient(135deg, $background-color, #1a1a1a)
+  margin: 0
+  padding: 0
+  @include flex-center
+  height: 100vh
+  color: $text-color
+
+// 容器样式
+.container
+  background-color: rgba(255, 255, 255, 0.1)
+  padding: 30px
+  border-radius: 15px
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3)
+  width: 350px
+  text-align: center
+  backdrop-filter: blur(10px)
+  border: 1px solid rgba(255, 255, 255, 0.1)
+
+  h1
+    color: $primary-color
+    margin-bottom: 20px
+    font-size: 24px
+    text-transform: uppercase
+    letter-spacing: 2px
+    @include glow-effect($glow-color)
+
+  p
+    color: $text-color
+    margin-bottom: 20px
+    font-size: 16px
+
+// 按钮样式
+.logout-btn
+  background-color: $button-color
+  color: white
+  border: none
+  padding: 12px 24px
+  border-radius: 5px
+  cursor: pointer
+  font-size: 16px
+  transition: background-color 0.3s ease, transform 0.3s ease
+  @include glow-effect($button-color)
+
+  &:hover
+    background-color: $button-hover-color
+    transform: scale(1.05)
+    @include glow-effect($button-hover-color)
